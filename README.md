@@ -59,9 +59,11 @@ O trabalho consiste na implementação de um sistema distribuído autônomo util
 
 ### 3.2. Metodologia de Implementação
 **Arquitetura e Comunicação**
+
 A comunicação entre os processos ocorre de forma indireta através do Broker MQTT (EMQX rodando em Docker). Todas as mensagens (Init, Election, Challenge, Solution) utilizam o formato JSON para estruturação dos dados.
 
 **Algoritmo de Eleição Distribuída**
+
 Foi implementada uma máquina de estados (`Init` → `Election` → `Running`) para coordenar o comportamento dos nós:
 
 * **Inicialização:** Os nós publicam seus identificadores na fila `sd/init` e aguardam o reconhecimento dos demais participantes.
@@ -71,6 +73,7 @@ Foi implementada uma máquina de estados (`Init` → `Election` → `Running`) p
 * **Decisão:** O nó com o maior `VoteID` (com critério de desempate pelo maior `ClientID`) é eleito Líder e assume o papel de **Controlador**. Os demais tornam-se **Mineradores**.
 
 **Estratégias de Sincronização** 
+
 Para mitigar problemas de latência e garantir a consistência do estado em um ambiente local simulado, foram utilizadas:
 
 * **Mensagens Retidas (MQTT Retain):** As mensagens críticas de inicialização e eleição são enviadas com a flag `retain=True`. Isso garante que, mesmo que um nó entre na rede com milissegundos de atraso, ele receba imediatamente o estado atual dos votos, prevenindo deadlocks na eleição.
@@ -78,6 +81,7 @@ Para mitigar problemas de latência e garantir a consistência do estado em um a
 * **Trava de Início Manual:** Uma barreira de entrada foi implementada para garantir que todos os processos estejam conectados ao Broker antes do início da troca de mensagens.
 
 **Prova de Trabalho (PoW)**
+
 O ciclo de mineração utiliza multithreading. Enquanto o nó escuta mensagens MQTT (como o anúncio de um novo bloco), quatro threads paralelas buscam uma solução SHA-1 que atenda ao desafio proposto pelo Controlador.
 
 ### 3.3. Resultados e Testes
