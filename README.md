@@ -35,6 +35,7 @@ Antes de iniciar os nós, é necessário subir o Broker MQTT localmente. Execute
 docker run -d --name emqx -p 1883:1883 -p 8083:8083 emqx/emqx:latest
 ```
   **Dica:** Para garantir um teste limpo (sem mensagens antigas retidas), recomenda-se reiniciar o container antes de cada nova execução: 
+ 
     ```bach
     docker restart emqx
     ```
@@ -58,9 +59,11 @@ python miner_node.py
 O trabalho consiste na implementação de um sistema distribuído autônomo utilizando o modelo Publish/Subscribe. O cenário simulado é uma rede de criptomoedas onde não há um servidor central fixo; em vez disso, os nós conectados devem se auto-organizar, eleger um líder (Controlador) e iniciar o ciclo de mineração (Prova de Trabalho).
 
 ### 3.2. Metodologia de Implementação
+
 **Arquitetura e Comunicação**
 
 A comunicação entre os processos ocorre de forma indireta através do Broker MQTT (EMQX rodando em Docker). Todas as mensagens (Init, Election, Challenge, Solution) utilizam o formato JSON para estruturação dos dados.
+
 
 **Algoritmo de Eleição Distribuída**
 
@@ -73,6 +76,7 @@ Foi implementada uma máquina de estados (`Init` → `Election` → `Running`) p
 * **Decisão:** O nó com o maior `VoteID` (com critério de desempate pelo maior `ClientID`) é eleito Líder e assume o papel de **Controlador**.
   Os demais tornam-se **Mineradores**.
 
+
 **Estratégias de Sincronização** 
 
 Para mitigar problemas de latência e garantir a consistência do estado em um ambiente local simulado, foram utilizadas:
@@ -81,9 +85,11 @@ Para mitigar problemas de latência e garantir a consistência do estado em um a
 
 * **Trava de Início Manual:** Uma barreira de entrada foi implementada para garantir que todos os processos estejam conectados ao Broker antes do início da troca de mensagens.
 
+
 **Prova de Trabalho (PoW)**
 
 O ciclo de mineração utiliza multithreading. Enquanto o nó escuta mensagens MQTT (como o anúncio de um novo bloco), quatro threads paralelas buscam uma solução SHA-1 que atenda ao desafio proposto pelo Controlador.
+
 
 ### 3.3. Resultados e Testes
 O sistema foi validado com 3 participantes simultâneos. Os testes demonstraram:
