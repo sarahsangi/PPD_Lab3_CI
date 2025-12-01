@@ -36,9 +36,9 @@ docker run -d --name emqx -p 1883:1883 -p 8083:8083 emqx/emqx:latest
 ```
   **Dica:** Para garantir um teste limpo (sem mensagens antigas retidas), recomenda-se reiniciar o container antes de cada nova execução: 
  
-    ```bach
+ ```bach
     docker restart emqx
-    ```
+ ```
 
 ### 2.3. Execução dos Nós
 O sistema exige no mínimo 3 participantes. Abra **3 terminais** diferentes e siga os passos abaixo:
